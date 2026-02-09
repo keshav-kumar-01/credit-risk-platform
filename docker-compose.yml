@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend
+  api:
+    build: .
+    container_name: credit-risk-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./reports:/app/reports
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/credit_risk
+      - MONGO_URI=mongodb://mongo:27017/credit_risk
+    depends_on:
+      - postgres
+      - mongo
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    networks:
+      - credit-risk-network
+
+  # Streamlit Frontend
+  frontend:
+    build: .
+    container_name: credit-risk-frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./reports:/app/reports
+    depends_on:
+      - api
+    command: streamlit run frontend/app.py --server.port 8501 --server.address 0.0.0.0
+    restart: unless-stopped
+    networks:
+      - credit-risk-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: credit-risk-postgres
+    environment:
+      POSTGRES_DB: credit_risk
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - credit-risk-network
+
+  # MongoDB Database
+  mongo:
+    image: mongo:6
+    container_name: credit-risk-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+    networks:
+      - credit-risk-network
+
+  # Redis Cache (optional, for future scaling)
+  redis:
+    image: redis:7-alpine
+    container_name: credit-risk-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - credit-risk-network
+
+volumes:
+  postgres_data:
+  mongo_data:
+
+
+networks:
+  credit-risk-network:
+    driver: bridge

@@ -1,0 +1,29 @@
+
+FAIRNESS AUDIT REPORT
+====================
+
+This report evaluates model bias across protected attributes.
+Thresholds:
+• |metric| < 0.10 → PASS
+• |metric| < 0.20 → REVIEW
+• |metric| ≥ 0.20 → FAIL
+
+--------------------------------------------------
+Protected Attribute: age_group
+--------------------------------------------------
+Demographic Parity Difference: 0.0281 [PASS]
+Equalized Odds Difference:     0.1652 [REVIEW]
+
+--------------------------------------------------
+Protected Attribute: gender
+--------------------------------------------------
+Demographic Parity Difference: 0.0016 [PASS]
+Equalized Odds Difference:     0.1029 [REVIEW]
+
+--------------------------------------------------
+Recommendations:
+• Review biased features
+• Consider fairness-aware training
+• Apply post-processing mitigation
+• Escalate to compliance if FAIL
+--------------------------------------------------
