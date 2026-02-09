@@ -31,6 +31,11 @@ try:
     from feature_engineering import CreditFeatureEngineering
     from explainability import CreditExplainer
     from fairness_audit import FairnessAuditor
+    
+    # Fix for joblib unpickling from __main__
+    import __main__
+    __main__.CreditFeatureEngineering = CreditFeatureEngineering
+    __main__.CreditExplainer = CreditExplainer
 except ImportError as e:
     st.error(f"❌ Critical Import Error: {str(e)}")
     st.info("Please ensure all files are in the 'src' directory.")

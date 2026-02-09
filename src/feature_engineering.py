@@ -80,7 +80,9 @@ class CreditFeatureEngineering:
                 include=["object", "category"]
             ).columns.tolist()
 
-        df = pd.get_dummies(df, columns=self.categorical_cols, drop_first=True)
+        # Only encode columns that exist in the dataframe
+        available_cols = [c for c in self.categorical_cols if c in df.columns]
+        df = pd.get_dummies(df, columns=available_cols, drop_first=True)
         
         # Store feature names after encoding
         if fit:

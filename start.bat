@@ -1,6 +1,8 @@
 @echo off
 REM ===============================================
 REM Credit Risk Platform - Startup Script
+REM Created by: Keshav Kumar
+REM Date: February 9, 2026
 REM ===============================================
 
 echo.

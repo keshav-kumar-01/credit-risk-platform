@@ -1,6 +1,8 @@
 #!/bin/bash
 # ===============================================
 # Credit Risk Platform - Startup Script (Linux/Mac)
+# Created by: Keshav Kumar
+# Date: February 9, 2026
 # ===============================================
 
 echo ""

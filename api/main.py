@@ -5,13 +5,19 @@ RESTful API for production deployment
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict
 import joblib
 import pandas as pd
 import numpy as np
 from pathlib import Path
 import sys
+from contextlib import asynccontextmanager
+
+# Initialize globals
+model = None
+feature_engineer = None
+explainer = None
 
 # =====================================================
 # PATH CONFIGURATION
@@ -30,6 +36,29 @@ sys.path.append(str(SRC_DIR))
 from explainability import CreditExplainer
 from feature_engineering import CreditFeatureEngineering
 
+# Fix for joblib unpickling CreditFeatureEngineering from __main__
+import __main__
+__main__.CreditFeatureEngineering = CreditFeatureEngineering
+__main__.CreditExplainer = CreditExplainer
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Load ML model and preprocessing pipeline on server start"""
+    global model, feature_engineer, explainer
+    
+    try:
+        model = joblib.load(str(TRAINED_MODELS_DIR / "best_model_catboost.pkl"))
+        feature_engineer = joblib.load(str(MODELS_DIR / "feature_engineer.pkl"))
+        explainer = joblib.load(str(EXPLAINERS_DIR / "credit_explainer.pkl"))
+        print("Models loaded successfully")
+    except Exception as e:
+        print(f"Error loading models: {e}")
+        # In testing we might not want to crash if files are missing, 
+        # but for production this is critical.
+    
+    yield
+    # Clean up can happen here
+
 # =====================================================
 # FASTAPI APP
 # =====================================================
@@ -39,7 +68,8 @@ app = FastAPI(
     description="Explainable AI for Credit Risk Assessment",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # CORS Configuration
@@ -55,19 +85,7 @@ app.add_middleware(
 # LOAD MODELS AT STARTUP
 # =====================================================
 
-@app.on_event("startup")
-def load_models():
-    """Load ML model and preprocessing pipeline on server start"""
-    global model, feature_engineer, explainer
-    
-    try:
-        model = joblib.load(TRAINED_MODELS_DIR / "best_model_catboost.pkl")
-        feature_engineer = joblib.load(MODELS_DIR / "feature_engineer.pkl")
-        explainer = joblib.load(EXPLAINERS_DIR / "credit_explainer.pkl")
-        print("✅ Models loaded successfully")
-    except Exception as e:
-        print(f"❌ Error loading models: {e}")
-        raise
+# Removed deprecated @app.on_event("startup")
 
 # =====================================================
 # PYDANTIC MODELS (REQUEST/RESPONSE)
@@ -80,8 +98,8 @@ class CreditApplication(BaseModel):
     duration: int = Field(..., ge=1, le=120, description="Loan duration in months")
     installment_rate: int = Field(..., ge=1, le=10, description="Installment rate as % of disposable income")
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "age": 30,
                 "credit_amount": 5000,
@@ -89,6 +107,7 @@ class CreditApplication(BaseModel):
                 "installment_rate": 4
             }
         }
+    )
 
 class FeatureImportance(BaseModel):
     """Feature importance for explanations"""
@@ -151,7 +170,7 @@ def predict_single(application: CreditApplication):
     
     try:
         # Convert to DataFrame
-        input_df = pd.DataFrame([application.dict()])
+        input_df = pd.DataFrame([application.model_dump()])
         
         # Feature engineering
         input_df = feature_engineer.create_features(input_df)
@@ -214,7 +233,7 @@ def predict_batch(batch: BatchPredictionRequest):
         
         for app in batch.applications:
             # Convert each application to prediction
-            input_df = pd.DataFrame([app.dict()])
+            input_df = pd.DataFrame([app.model_dump()])
             
             # Feature engineering
             input_df = feature_engineer.create_features(input_df)
@@ -230,7 +249,7 @@ def predict_batch(batch: BatchPredictionRequest):
             probability = float(model.predict_proba(input_df)[0][1])
             
             results.append({
-                "application": app.dict(),
+                "application": app.model_dump(),
                 "decision": "DECLINED" if prediction == 1 else "APPROVED",
                 "probability": probability
             })

@@ -11,28 +11,32 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.append(str(BASE_DIR / "api"))
 
-from main import app
+from main import app, model
 
-client = TestClient(app)
+@pytest.fixture(scope="module")
+def client():
+    """Create a test client that triggers lifespan events"""
+    with TestClient(app) as c:
+        yield c
 
 
-def test_root():
+def test_root(client):
     """Test root endpoint"""
     response = client.get("/")
     assert response.status_code == 200
     assert "message" in response.json()
 
 
-def test_health_check():
+def test_health_check(client):
     """Test health check endpoint"""
     response = client.get("/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
-    assert "model_loaded" in data
+    assert data["model_loaded"] is True
 
 
-def test_single_prediction():
+def test_single_prediction(client):
     """Test single prediction endpoint"""
     payload = {
         "age": 30,
@@ -42,6 +46,8 @@ def test_single_prediction():
     }
     
     response = client.post("/predict", json=payload)
+    if response.status_code != 200:
+        print(f"\nResponse Error: {response.json()}")
     assert response.status_code == 200
     
     data = response.json()
@@ -53,7 +59,7 @@ def test_single_prediction():
     assert len(data["top_factors"]) > 0
 
 
-def test_batch_prediction():
+def test_batch_prediction(client):
     """Test batch prediction endpoint"""
     payload = {
         "applications": [
@@ -73,6 +79,8 @@ def test_batch_prediction():
     }
     
     response = client.post("/batch-predict", json=payload)
+    if response.status_code != 200:
+        print(f"\nResponse Error: {response.json()}")
     assert response.status_code == 200
     
     data = response.json()
@@ -81,7 +89,7 @@ def test_batch_prediction():
     assert data["total"] == 2
 
 
-def test_model_info():
+def test_model_info(client):
     """Test model info endpoint"""
     response = client.get("/model-info")
     assert response.status_code == 200
@@ -91,7 +99,7 @@ def test_model_info():
     assert "performance" in data
 
 
-def test_invalid_input():
+def test_invalid_input(client):
     """Test validation with invalid input"""
     payload = {
         "age": -5,  # Invalid age
