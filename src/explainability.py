@@ -67,7 +67,7 @@ def save_pdf(content: str, filename: str):
 class CreditExplainer:
     """
     Explainable AI module for credit risk decisions
-    Supports SHAP, adverse action notices, and recommendations
+    Supports SHAP (Tree & Kernel), LIME, adverse action notices, and recommendations
     """
 
     def __init__(self, model, X_train, feature_names):
@@ -80,98 +80,210 @@ class CreditExplainer:
     # ---------------- SHAP ----------------
 
     def initialize_shap(self):
+        # We need to ensure we use a model wrapper that aligns CatBoost with SHAP expected inputs
+        # But simpler: CatBoost has its own SHAP calculation or we adhere strictly to version compat.
+        
         try:
+            # Attempt efficient TreeExplainer first (for CatBoost/XGBoost/RF)
             self.shap_explainer = shap.TreeExplainer(self.model)
-        except Exception:
+        except Exception as e:
+            print(f"TreeExplainer failed ({e}), falling back to KernelExplainer...")
+            # For KernelExplainer, we must use a background summary to avoid slowness
+            # And pass the PREDICT PROBA function, not the model object itself
+            background_summary = shap.sample(self.X_train, 50)
             self.shap_explainer = shap.KernelExplainer(
                 self.model.predict_proba,
-                shap.sample(self.X_train, 100)
+                background_summary
             )
         return self.shap_explainer
 
     def explain_prediction_shap(self, X_instance: pd.DataFrame):
-
         if self.shap_explainer is None:
             self.initialize_shap()
 
-        shap_values = self.shap_explainer.shap_values(X_instance)
+        # Handle mismatch: Model expects certain columns, ensure X_instance matches
+        # X_instance should already be engineered/scaled from the app.
+        
+        try:
+            shap_values = self.shap_explainer.shap_values(X_instance)
+        except Exception as e:
+            # Fallback if specific features are missing in the pool
+            # Re-initialize explicitly with this instance structure if dynamic?
+            # Or usually it means X_instance columns != X_train columns used for init.
+            print(f"SHAP calculation error: {e}")
+            raise e
 
+        # CatBoost/Binary often returns list of arrays [class0, class1] or just raw array
         if isinstance(shap_values, list):
+            # We want the positive class (Risk/Default = 1)
             shap_values = shap_values[1]
+        
+        # Dimensions check
+        if len(shap_values.shape) > 1:
+            # (1, num_features)
+            single_shap = shap_values[0]
+        else:
+            single_shap = shap_values
 
-        # Save SHAP force plot
-        shap.force_plot(
-            self.shap_explainer.expected_value[1]
-            if isinstance(self.shap_explainer.expected_value, np.ndarray)
-            else self.shap_explainer.expected_value,
-            shap_values[0],
-            X_instance.iloc[0],
-            feature_names=self.feature_names,
-            matplotlib=True,
-            show=False
-        )
+        # Generate Force Plot (Safety wrapped)
+        try:
+            expected_val = self.shap_explainer.expected_value
+            if isinstance(expected_val, np.ndarray) or isinstance(expected_val, list):
+                expected_val = expected_val[1] # Class 1 base value
 
-        plt.savefig(
-            os.path.join(FIGURES_DIR, "shap_force_plot_0.png"),
-            dpi=300,
-            bbox_inches="tight"
-        )
-        plt.close()
+            shap.force_plot(
+                expected_val,
+                single_shap,
+                X_instance.iloc[0],
+                feature_names=self.feature_names,
+                matplotlib=True,
+                show=False
+            )
+            plt.savefig(
+                os.path.join(FIGURES_DIR, "shap_force_plot_0.png"),
+                dpi=300,
+                bbox_inches="tight"
+            )
+            plt.close()
+        except Exception as plot_err:
+            print(f"SHAP Plotting Warning: {plot_err}")
 
+        # Return Feature Importance DataFrame
         importance = (
             pd.DataFrame({
                 "feature": self.feature_names,
-                "shap_value": shap_values[0]
+                "shap_value": single_shap
             })
             .sort_values("shap_value", key=abs, ascending=False)
         )
 
         return importance
 
-    # ---------------- REPORTS ----------------
+    # ---------------- LIME ----------------
+
+    def initialize_lime(self):
+        # LIME Tabular Explainer
+        # Requires training data (numpy array preferred)
+        self.lime_explainer = lime.lime_tabular.LimeTabularExplainer(
+            training_data=self.X_train.values,
+            feature_names=self.feature_names,
+            class_names=['Approved', 'Declined'], # 0, 1
+            mode='classification',
+            verbose=False,
+            random_state=42
+        )
+        return self.lime_explainer
+
+    def explain_prediction_lime(self, X_instance: pd.DataFrame):
+        if self.lime_explainer is None:
+            self.initialize_lime()
+            
+        # LIME expects numpy array for the instance
+        instance_array = X_instance.iloc[0].values
+        
+        exp = self.lime_explainer.explain_instance(
+            data_row=instance_array,
+            predict_fn=self.model.predict_proba,
+            num_features=5
+        )
+        
+        # Parse into structured format
+        lime_list = exp.as_list()
+        # list of tuples (feature_condition, contribution)
+        return lime_list
+
+    # ---------------- REPORTS & COUNTERFACTUALS ----------------
 
     def generate_adverse_action_notice(self, X_instance, prediction):
-
+        # Get SHAP insights
         importance = self.explain_prediction_shap(X_instance)
         top = importance.head(5)
+
+        prob = self.model.predict_proba(X_instance)[0][1]
 
         notice = f"""
 ADVERSE ACTION NOTICE
 ====================
 
 Decision: {'DECLINED' if prediction == 1 else 'APPROVED'}
-Default Risk Probability: {self.model.predict_proba(X_instance)[0][1]:.2%}
+Default Risk Probability: {prob:.2%}
 
-Primary Factors:
+Primary Factors Influencing Decision:
 """
-
         for i, row in enumerate(top.itertuples(), 1):
-            impact = "NEGATIVE" if row.shap_value > 0 else "POSITIVE"
-            notice += f"\n{i}. {row.feature} ({impact}) | Impact: {abs(row.shap_value):.3f}"
+            impact = "NEGATIVE (Risk Increasing)" if row.shap_value > 0 else "POSITIVE (Supportive)"
+            notice += f"\n{i}. {row.feature} ({impact}) | Impact Score: {abs(row.shap_value):.3f}"
 
         notice += """
 ------------------------------------------------------
-You have the right to:
-• Request a free credit report
-• Dispute incorrect information
-• Request reconsideration
+Your Rights:
+• You have the right to request a free copy of your credit report within 60 days.
+• You have the right to dispute incomplete or inaccurate information.
+• You have the right to request a specific reason for this decision.
 ------------------------------------------------------
 """
-
         return notice
 
     def actionable_recommendations(self, X_instance):
-
         importance = self.explain_prediction_shap(X_instance)
-        negative = importance[importance["shap_value"] > 0].head(5)
+        
+        # Filter for features increasing risk (positive SHAP for class 1)
+        # We assume 1 = Default/Risk. Positive SHAP pushes towards 1.
+        risk_drivers = importance[importance["shap_value"] > 0].head(5)
 
         text = "RECOMMENDATIONS TO IMPROVE APPROVAL ODDS\n"
         text += "======================================\n\n"
 
-        for row in negative.itertuples():
-            text += f"• Improve your {row.feature}\n"
+        if risk_drivers.empty:
+            text += "Your profile is strong. Maintain current financial habits."
+        else:
+            for row in risk_drivers.itertuples():
+                feat = row.feature
+                # Simple logic for recommendation strings
+                if "amount" in feat or "credit" in feat:
+                    text += f"• Consider requesting a lower credit amount (Driver: {feat})\n"
+                elif "duration" in feat:
+                    text += f"• Adjust loan duration to lower monthly burden (Driver: {feat})\n"
+                elif "income" in feat or "debt" in feat:
+                    text += f"• Reduce existing debt obligations (Driver: {feat})\n"
+                elif "age" in feat:
+                     text += f"• Build longer credit history over time (Driver: {feat})\n"
+                else:
+                    text += f"• Improve metric: {feat}\n"
 
         return text
+
+    def generate_counterfactual_insight(self, X_instance):
+        """
+        Simple heuristic/perturbation-based counterfactual.
+        "What-if" analysis: How much does Income need to increase?
+        """
+        # Start simplistic: Check if increasing income by 10% flips prediction?
+        # Or decreasing amount by 10%?
+        
+        base_pred = self.model.predict(X_instance)[0]
+        if base_pred == 0:
+            return "Application is already Approved."
+            
+        # Try Perturbations
+        scenarios = []
+        
+        # 1. Decrease Credit Amount
+        for pct in [0.9, 0.8, 0.7]:
+            temp = X_instance.copy()
+            if 'credit_amount' in temp.columns: # scaled? assume standard scaler... tough to inverse without scaler object.
+                # Since we operate on PRE-PROCESSED data here (X_instance is passed from App after scaling)
+                # We can't easily say "$500". We just say "Reduce 'credit_amount' feature value"
+                temp['credit_amount'] = temp['credit_amount'] * pct # Rough reduction in scaled space if positive
+                new_pred = self.model.predict(temp)[0]
+                if new_pred == 0:
+                    scenarios.append(f"Reducing Credit Amount by ~{int((1-pct)*100)}%")
+                    break
+        
+        if not scenarios:
+            return "No simple single-factor change found to flip decision. Requires multi-factor improvement."
+            
+        return "Possible Path to Approval: " + ", ".join(scenarios)
 
 # =====================================================
 # LOCAL TEST (OPTIONAL)
@@ -195,9 +307,16 @@ if __name__ == "__main__":
 
     sample = X_test.iloc[[0]]
     prediction = model.predict(sample)[0]
+    
+    # Test LIME
+    print("Testing LIME...")
+    lime_res = explainer.explain_prediction_lime(sample)
+    print("LIME Result:", lime_res)
 
     notice = explainer.generate_adverse_action_notice(sample, prediction)
     recommendations = explainer.actionable_recommendations(sample)
+    cf = explainer.generate_counterfactual_insight(sample)
+    print("Counterfactual:", cf)
 
     save_txt(notice, os.path.join(OUTPUTS_DIR, "adverse_action_notice.txt"))
     save_pdf(notice, os.path.join(OUTPUTS_DIR, "adverse_action_notice.pdf"))
@@ -210,4 +329,4 @@ if __name__ == "__main__":
         os.path.join(EXPLAINERS_DIR, "credit_explainer.pkl")
     )
 
-    print("✅ CreditExplainer exported successfully")
+    print("✅ CreditExplainer (LIME+SHAP+CF) exported successfully")

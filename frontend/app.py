@@ -143,6 +143,11 @@ st.sidebar.markdown("""
 - **Pricing:** View plans & strategy
 """)
 
+st.sidebar.markdown("---")
+if st.sidebar.button("🔄 Reset System", help="Clear cache and reload models"):
+    st.cache_resource.clear()
+    st.rerun()
+
 # =====================================================
 # HOME PAGE
 # =====================================================

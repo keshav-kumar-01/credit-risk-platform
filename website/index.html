@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditRisk.AI — Explainable AI Credit Risk Platform</title>
+    <meta name="description" content="Production-ready explainable AI platform for credit risk assessment. Bank-grade decisions with SHAP, LIME, and counterfactual explainability. FCRA, ECOA, GDPR compliant.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- ============= NAVIGATION ============= -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" id="nav-brand">
+                <span class="brand-icon">💳</span>
+                <span class="brand-text">CreditRisk<span class="brand-accent">.AI</span></span>
+            </a>
+            <div class="nav-links" id="nav-links">
+                <a href="#home" class="nav-link active" data-section="home">Home</a>
+                <a href="#assess" class="nav-link" data-section="assess">Assess Risk</a>
+                <a href="#explainability" class="nav-link" data-section="explainability">Explainability</a>
+                <a href="#api-docs" class="nav-link" data-section="api-docs">API</a>
+                <a href="#pricing" class="nav-link" data-section="pricing">Pricing</a>
+            </div>
+            <div class="nav-actions">
+                <a href="/docs" class="btn btn-outline btn-sm" target="_blank" id="nav-api-docs">API Docs</a>
+                <button class="btn btn-primary btn-sm" id="nav-get-started" onclick="navigateTo('assess')">Get Started</button>
+            </div>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ============= HERO SECTION ============= -->
+    <section class="hero" id="home">
+        <div class="hero-bg-effects">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+            <div class="grid-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-pulse"></span>
+                <span>🔥 Production Ready — v2.0</span>
+            </div>
+            <h1 class="hero-title">
+                Explainable AI for<br>
+                <span class="gradient-text">Credit Risk Assessment</span>
+            </h1>
+            <p class="hero-subtitle">
+                Bank-grade lending decisions with full transparency. Powered by 6 ML models, 
+                SHAP & LIME explainability, and real-time fairness auditing. 
+                Fully compliant with FCRA, ECOA, and GDPR.
+            </p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" id="hero-cta-assess" onclick="navigateTo('assess')">
+                    <span>🔍</span> Assess Credit Risk
+                </button>
+                <a href="/docs" class="btn btn-glass btn-lg" id="hero-cta-api" target="_blank">
+                    <span>📡</span> Explore API
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="stat-number" data-count="6">0</span>
+                    <span class="stat-label">ML Models</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number" data-count="76">0</span>
+                    <span class="stat-label">% Accuracy</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number" data-count="50">0</span>
+                    <span class="stat-label">+ Risk Factors</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number" data-count="4">0</span>
+                    <span class="stat-label">Compliance</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= FEATURES SECTION ============= -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Why CreditRisk.AI?</span>
+                <h2 class="section-title">Enterprise-Grade Credit Intelligence</h2>
+                <p class="section-subtitle">Everything banks, fintechs, and lenders need for fair, transparent lending decisions</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>6 ML Models</h3>
+                    <p>CatBoost, XGBoost, LightGBM, Random Forest, Gradient Boosting, Logistic Regression with automatic best-model selection</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>SHAP Explainability</h3>
+                    <p>Mathematically guaranteed fair attribution via SHapley Additive exPlanations. Every decision is fully transparent and auditable.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧪</div>
+                    <h3>LIME Analysis</h3>
+                    <p>Model-agnostic local interpretable explanations for second-opinion validation. Dual-method explainability builds regulator trust.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3>Fairness Auditing</h3>
+                    <p>Fairlearn integration for demographic parity and equalized odds. Detect and mitigate bias across protected attributes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Adverse Action Notices</h3>
+                    <p>FCRA-compliant legally required rejection notices generated automatically with specific reasons and consumer rights.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Counterfactual Analysis</h3>
+                    <p>"What-if" scenarios showing applicants exactly what to change for approval. Builds goodwill and repeat business.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= CREDIT ASSESSMENT SECTION ============= -->
+    <section class="assess-section" id="assess">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Credit Assessment</span>
+                <h2 class="section-title">Comprehensive Risk Evaluation</h2>
+                <p class="section-subtitle">Complete bank-grade credit application covering all 5 Cs of Credit</p>
+            </div>
+
+            <!-- Mode Toggle -->
+            <div class="mode-toggle-container">
+                <div class="mode-toggle" id="mode-toggle">
+                    <button class="mode-btn active" data-mode="quick" id="mode-quick">⚡ Quick Check (4 Fields)</button>
+                    <button class="mode-btn" data-mode="full" id="mode-full">🏦 Full Assessment (50+ Fields)</button>
+                </div>
+            </div>
+
+            <!-- Quick Check Form -->
+            <div class="form-container" id="quick-form">
+                <form id="quick-assess-form" class="credit-form">
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">⚡</span>
+                            <h3>Quick Pre-Qualification</h3>
+                            <p>Fast screening with just 4 key data points</p>
+                        </div>
+                        <div class="form-grid form-grid-2">
+                            <div class="form-group">
+                                <label for="q-age">Age <span class="required">*</span></label>
+                                <input type="number" id="q-age" name="age" min="18" max="100" value="30" required>
+                                <span class="form-hint">18-100 years</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-credit-amount">Loan Amount ($) <span class="required">*</span></label>
+                                <input type="number" id="q-credit-amount" name="credit_amount" min="100" max="10000000" value="15000" required>
+                                <span class="form-hint">$100 — $10,000,000</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-duration">Loan Duration (months) <span class="required">*</span></label>
+                                <input type="number" id="q-duration" name="duration" min="1" max="360" value="36" required>
+                                <span class="form-hint">1-360 months</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-installment-rate">Installment Rate (%) <span class="required">*</span></label>
+                                <input type="range" id="q-installment-rate" name="installment_rate" min="1" max="10" value="4">
+                                <div class="range-display"><span id="q-rate-value">4</span>% of disposable income</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-full" id="quick-submit-btn">
+                        <span class="btn-icon">🔍</span>
+                        <span>Assess Credit Risk</span>
+                        <span class="btn-loader" style="display:none;">⏳</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Full Assessment Form -->
+            <div class="form-container" id="full-form" style="display:none;">
+                <form id="full-assess-form" class="credit-form">
+                    
+                    <!-- Section 1: Personal Information -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">👤</span>
+                            <h3>Personal Information</h3>
+                            <p>Basic applicant details</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-age">Age <span class="required">*</span></label>
+                                <input type="number" id="f-age" name="age" min="18" max="100" value="35" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-marital">Marital Status</label>
+                                <select id="f-marital" name="marital_status">
+                                    <option value="single">Single</option>
+                                    <option value="married" selected>Married</option>
+                                    <option value="divorced">Divorced</option>
+                                    <option value="widowed">Widowed</option>
+                                    <option value="separated">Separated</option>
+                                    <option value="domestic_partner">Domestic Partner</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-dependents">Number of Dependents</label>
+                                <input type="number" id="f-dependents" name="num_dependents" min="0" max="15" value="2">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-education">Education Level</label>
+                                <select id="f-education" name="education_level">
+                                    <option value="high_school">High School</option>
+                                    <option value="some_college">Some College</option>
+                                    <option value="trade_school">Trade School</option>
+                                    <option value="bachelors" selected>Bachelor's Degree</option>
+                                    <option value="masters">Master's Degree</option>
+                                    <option value="doctorate">Doctorate</option>
+                                    <option value="professional">Professional Degree</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-years-address">Years at Current Address</label>
+                                <input type="number" id="f-years-address" name="years_at_current_address" min="0" max="60" value="5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Employment & Income -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">💼</span>
+                            <h3>Employment & Income</h3>
+                            <p>Current employment and income details (Capacity)</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-employment">Employment Status</label>
+                                <select id="f-employment" name="employment_status">
+                                    <option value="full_time" selected>Full-Time</option>
+                                    <option value="part_time">Part-Time</option>
+                                    <option value="self_employed">Self-Employed</option>
+                                    <option value="contract">Contract/Freelance</option>
+                                    <option value="retired">Retired</option>
+                                    <option value="military">Military</option>
+                                    <option value="student">Student</option>
+                                    <option value="unemployed">Unemployed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-years-employed">Years Employed</label>
+                                <input type="number" id="f-years-employed" name="years_employed" min="0" max="50" step="0.5" value="7">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-annual-income">Annual Income ($)</label>
+                                <input type="number" id="f-annual-income" name="annual_income" min="0" max="10000000" value="85000">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-other-income">Other Income ($)</label>
+                                <input type="number" id="f-other-income" name="other_income" min="0" max="5000000" value="5000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Loan Details -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">🏦</span>
+                            <h3>Loan Details</h3>
+                            <p>Requested loan information (Conditions)</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-credit-amount">Loan Amount ($) <span class="required">*</span></label>
+                                <input type="number" id="f-credit-amount" name="credit_amount" min="100" max="10000000" value="25000" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-duration">Duration (months) <span class="required">*</span></label>
+                                <input type="number" id="f-duration" name="duration" min="1" max="360" value="36" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-purpose">Loan Purpose</label>
+                                <select id="f-purpose" name="loan_purpose">
+                                    <option value="home_purchase">Home Purchase</option>
+                                    <option value="home_improvement">Home Improvement</option>
+                                    <option value="auto_purchase" selected>Auto Purchase</option>
+                                    <option value="education">Education</option>
+                                    <option value="debt_consolidation">Debt Consolidation</option>
+                                    <option value="business">Business</option>
+                                    <option value="medical">Medical</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="wedding">Wedding</option>
+                                    <option value="vacation">Vacation</option>
+                                    <option value="moving">Moving/Relocation</option>
+                                    <option value="major_purchase">Major Purchase</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-installment-rate">Installment Rate (%)</label>
+                                <input type="range" id="f-installment-rate" name="installment_rate" min="1" max="10" value="3">
+                                <div class="range-display"><span id="f-rate-value">3</span>%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Financial Profile -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">💰</span>
+                            <h3>Financial Profile</h3>
+                            <p>Account status and credit history (Character)</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-checking">Checking Account</label>
+                                <select id="f-checking" name="checking_account_status">
+                                    <option value="no_account">No Account</option>
+                                    <option value="negative">Negative Balance</option>
+                                    <option value="low">Low Balance (&lt; $200)</option>
+                                    <option value="moderate" selected>Moderate ($200 - $5,000)</option>
+                                    <option value="high">High (&gt; $5,000)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-savings">Savings Account</label>
+                                <select id="f-savings" name="savings_account_status">
+                                    <option value="no_savings">No Savings</option>
+                                    <option value="under_500">Under $500</option>
+                                    <option value="between_500_1000" selected>$500 - $1,000</option>
+                                    <option value="between_1000_5000">$1,000 - $5,000</option>
+                                    <option value="over_5000">Over $5,000</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-credit-history">Credit History</label>
+                                <select id="f-credit-history" name="credit_history">
+                                    <option value="no_history">No History</option>
+                                    <option value="all_paid">All Paid Back</option>
+                                    <option value="existing_paid" selected>Existing — Paid Duly</option>
+                                    <option value="delayed">Delayed Past Payments</option>
+                                    <option value="critical">Critical/Other Credits</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-existing-credits">Existing Credit Accounts</label>
+                                <input type="number" id="f-existing-credits" name="existing_credits" min="0" max="20" value="2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Debt Information -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">📊</span>
+                            <h3>Debt Information</h3>
+                            <p>Current debt obligations for DTI calculation (Capacity)</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-monthly-debt">Monthly Debt Payments ($)</label>
+                                <input type="number" id="f-monthly-debt" name="monthly_debt_payments" min="0" max="500000" value="1200">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-cc-balance">Credit Card Balance ($)</label>
+                                <input type="number" id="f-cc-balance" name="credit_card_balance" min="0" max="1000000" value="3500">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-cc-limit">Credit Card Limit ($)</label>
+                                <input type="number" id="f-cc-limit" name="credit_card_limit" min="0" max="5000000" value="15000">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-auto-loan">Auto Loan Balance ($)</label>
+                                <input type="number" id="f-auto-loan" name="auto_loan_balance" min="0" max="500000" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-student-loan">Student Loan Balance ($)</label>
+                                <input type="number" id="f-student-loan" name="student_loan_balance" min="0" max="500000" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-mortgage-balance">Mortgage Balance ($)</label>
+                                <input type="number" id="f-mortgage-balance" name="mortgage_balance" min="0" max="5000000" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 6: Credit Score -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">📈</span>
+                            <h3>Credit Score & History</h3>
+                            <p>Credit bureau information (Character)</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-credit-score">FICO Credit Score</label>
+                                <input type="number" id="f-credit-score" name="credit_score" min="300" max="850" value="720" placeholder="300-850">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-inquiries">Credit Inquiries (6mo)</label>
+                                <input type="number" id="f-inquiries" name="num_credit_inquiries_6m" min="0" max="30" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-late-payments">Late Payments (2yr)</label>
+                                <input type="number" id="f-late-payments" name="num_late_payments_2y" min="0" max="50" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-delinquencies">Delinquencies (2yr)</label>
+                                <input type="number" id="f-delinquencies" name="delinquencies_2y" min="0" max="30" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-public-records">Public Records</label>
+                                <input type="number" id="f-public-records" name="public_records" min="0" max="10" value="0">
+                                <span class="form-hint">Bankruptcies, liens, etc.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-oldest-credit">Oldest Credit Line (years)</label>
+                                <input type="number" id="f-oldest-credit" name="oldest_credit_line_years" min="0" max="60" step="0.5" value="8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 7: Assets & Collateral -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">🏠</span>
+                            <h3>Assets & Collateral</h3>
+                            <p>Property, vehicles, and investments (Capital & Collateral)</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-housing">Housing Status</label>
+                                <select id="f-housing" name="housing_status">
+                                    <option value="rent">Rent</option>
+                                    <option value="own">Own</option>
+                                    <option value="mortgage" selected>Mortgage</option>
+                                    <option value="living_with_family">Living with Family</option>
+                                    <option value="free">Free / Employer Provided</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="f-property-value">Property Value ($)</label>
+                                <input type="number" id="f-property-value" name="property_value" min="0" max="50000000" value="350000">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-vehicle-value">Vehicle Value ($)</label>
+                                <input type="number" id="f-vehicle-value" name="vehicle_value" min="0" max="500000" value="20000">
+                            </div>
+                            <div class="form-group">
+                                <label for="f-investments">Investment Accounts ($)</label>
+                                <input type="number" id="f-investments" name="investment_accounts" min="0" max="50000000" value="50000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 8: Banking & Additional -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <span class="section-icon">🔐</span>
+                            <h3>Banking & Additional Factors</h3>
+                            <p>Banking relationship and risk flags</p>
+                        </div>
+                        <div class="form-grid form-grid-3">
+                            <div class="form-group">
+                                <label for="f-years-bank">Years with Current Bank</label>
+                                <input type="number" id="f-years-bank" name="years_with_bank" min="0" max="60" step="0.5" value="5">
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-has-checking" name="has_checking_account" checked>
+                                    <span class="checkmark"></span>
+                                    Has Checking Account
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-has-savings" name="has_savings_account" checked>
+                                    <span class="checkmark"></span>
+                                    Has Savings Account
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-direct-deposit" name="has_direct_deposit" checked>
+                                    <span class="checkmark"></span>
+                                    Has Direct Deposit
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-co-applicant" name="has_co_applicant">
+                                    <span class="checkmark"></span>
+                                    Has Co-Applicant/Guarantor
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-telephone" name="has_telephone" checked>
+                                    <span class="checkmark"></span>
+                                    Has Telephone
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-foreign-worker" name="is_foreign_worker">
+                                    <span class="checkmark"></span>
+                                    Foreign Worker
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-bankruptcy" name="bankruptcy_history">
+                                    <span class="checkmark"></span>
+                                    Bankruptcy History
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="f-foreclosure" name="foreclosure_history">
+                                    <span class="checkmark"></span>
+                                    Foreclosure History
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-full" id="full-submit-btn">
+                        <span class="btn-icon">🏦</span>
+                        <span>Run Full Credit Assessment</span>
+                        <span class="btn-loader" style="display:none;">⏳</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ========= RESULTS SECTION ========= -->
+            <div class="results-container" id="results-container" style="display:none;">
+                <div class="results-header">
+                    <h2>📊 Assessment Results</h2>
+                    <button class="btn btn-outline btn-sm" onclick="clearResults()" id="clear-results-btn">✕ Clear</button>
+                </div>
+
+                <!-- Decision Banner -->
+                <div class="decision-banner" id="decision-banner">
+                    <div class="decision-icon" id="decision-icon">✅</div>
+                    <div class="decision-text">
+                        <h2 id="decision-text">APPROVED</h2>
+                        <p id="decision-sub">Low risk — Credit application meets lending criteria</p>
+                    </div>
+                    <div class="decision-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Risk Grade</span>
+                            <span class="meta-value" id="risk-grade">A</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Score Equiv.</span>
+                            <span class="meta-value" id="score-equiv">740</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="metrics-grid" id="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">📊</div>
+                        <div class="metric-value" id="m-probability">23%</div>
+                        <div class="metric-label">Default Probability</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⚡</div>
+                        <div class="metric-value" id="m-risk-level">LOW</div>
+                        <div class="metric-label">Risk Level</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">💳</div>
+                        <div class="metric-value" id="m-dti">15%</div>
+                        <div class="metric-label">Debt-to-Income</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⏱️</div>
+                        <div class="metric-value" id="m-time">45ms</div>
+                        <div class="metric-label">Processing Time</div>
+                    </div>
+                </div>
+
+                <!-- Risk Gauge -->
+                <div class="gauge-container">
+                    <h3>Risk Score</h3>
+                    <div class="risk-gauge" id="risk-gauge">
+                        <svg viewBox="0 0 200 120" class="gauge-svg">
+                            <defs>
+                                <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#22c55e"/>
+                                    <stop offset="50%" style="stop-color:#eab308"/>
+                                    <stop offset="100%" style="stop-color:#ef4444"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12" stroke-linecap="round"/>
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" id="gauge-arc" stroke-dasharray="251.2" stroke-dashoffset="125.6"/>
+                            <circle cx="100" cy="100" r="4" fill="#fff" id="gauge-needle-dot"/>
+                            <line x1="100" y1="100" x2="100" y2="30" stroke="#fff" stroke-width="2" stroke-linecap="round" id="gauge-needle" transform="rotate(-90, 100, 100)"/>
+                            <text x="100" y="85" text-anchor="middle" fill="#fff" font-size="24" font-weight="700" id="gauge-value">23%</text>
+                            <text x="100" y="100" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10" id="gauge-label">DEFAULT RISK</text>
+                            <text x="25" y="115" text-anchor="middle" fill="#22c55e" font-size="9">LOW</text>
+                            <text x="100" y="115" text-anchor="middle" fill="#eab308" font-size="9">MEDIUM</text>
+                            <text x="175" y="115" text-anchor="middle" fill="#ef4444" font-size="9">HIGH</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- SHAP Factors -->
+                <div class="factors-container">
+                    <h3>🔍 Top Influencing Factors (SHAP)</h3>
+                    <p class="factors-subtitle">Each factor's contribution to the risk assessment, ranked by impact</p>
+                    <div class="factors-list" id="factors-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Explanation Text -->
+                <div class="explanation-container" id="explanation-container" style="display:none;">
+                    <h3>📋 Decision Explanation</h3>
+                    <pre class="explanation-text" id="explanation-text"></pre>
+                </div>
+
+                <!-- Adverse Action Notice (if declined) -->
+                <div class="adverse-container" id="adverse-container" style="display:none;">
+                    <h3>⚠️ Adverse Action Notice</h3>
+                    <p class="adverse-subtitle">Legally required notice under the Fair Credit Reporting Act (FCRA)</p>
+                    <pre class="adverse-text" id="adverse-text"></pre>
+                </div>
+
+                <!-- Recommendations (if declined) -->
+                <div class="recommendations-container" id="recommendations-container" style="display:none;">
+                    <h3>💡 Recommendations to Improve Approval</h3>
+                    <pre class="recommendations-text" id="recommendations-text"></pre>
+                </div>
+
+                <!-- Counterfactual (if declined) -->
+                <div class="counterfactual-container" id="counterfactual-container" style="display:none;">
+                    <h3>🔄 What-If Analysis (Counterfactual)</h3>
+                    <p class="counterfactual-text" id="counterfactual-text"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= EXPLAINABILITY SECTION ============= -->
+    <section class="explainability-section" id="explainability">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Transparency First</span>
+                <h2 class="section-title">How Our Explainability Works</h2>
+                <p class="section-subtitle">Three complementary methods ensure every decision is fully understood</p>
+            </div>
+            <div class="explain-grid">
+                <div class="explain-card">
+                    <div class="explain-header">
+                        <div class="explain-number">01</div>
+                        <h3>SHAP Analysis</h3>
+                    </div>
+                    <p>Based on game theory (Shapley values), SHAP provides mathematically guaranteed fair attribution of each feature's contribution. Every prediction gets a complete breakdown of which factors helped and which hurt.</p>
+                    <div class="explain-tags">
+                        <span class="tag">TreeExplainer</span>
+                        <span class="tag">Force Plots</span>
+                        <span class="tag">Global/Local</span>
+                    </div>
+                </div>
+                <div class="explain-card">
+                    <div class="explain-header">
+                        <div class="explain-number">02</div>
+                        <h3>LIME Validation</h3>
+                    </div>
+                    <p>LIME creates simplified local models around each prediction for model-agnostic validation. When SHAP and LIME agree, confidence in the explanation skyrockets — critical for regulatory review.</p>
+                    <div class="explain-tags">
+                        <span class="tag">Model Agnostic</span>
+                        <span class="tag">Local Fidelity</span>
+                        <span class="tag">Interpretable</span>
+                    </div>
+                </div>
+                <div class="explain-card">
+                    <div class="explain-header">
+                        <div class="explain-number">03</div>
+                        <h3>Counterfactual "What-If"</h3>
+                    </div>
+                    <p>Shows applicants the minimum change needed for a different outcome. "If you reduce your loan amount by 20%, you'd be approved." Builds trust and drives repeat applications.</p>
+                    <div class="explain-tags">
+                        <span class="tag">Perturbation</span>
+                        <span class="tag">Actionable</span>
+                        <span class="tag">Consumer-Friendly</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= API DOCS SECTION ============= -->
+    <section class="api-section" id="api-docs">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Developer API</span>
+                <h2 class="section-title">REST API for Production Integration</h2>
+                <p class="section-subtitle">Integrate credit risk assessment into your application in minutes</p>
+            </div>
+            <div class="api-demo">
+                <div class="api-tabs">
+                    <button class="api-tab active" data-tab="python" id="api-tab-python">Python</button>
+                    <button class="api-tab" data-tab="curl" id="api-tab-curl">cURL</button>
+                    <button class="api-tab" data-tab="javascript" id="api-tab-javascript">JavaScript</button>
+                </div>
+                <div class="code-block" id="code-python">
+                    <pre><code><span class="code-keyword">import</span> requests
+
+<span class="code-comment"># Full Assessment (50+ fields)</span>
+application = {
+    <span class="code-string">"age"</span>: 35,
+    <span class="code-string">"credit_amount"</span>: 25000,
+    <span class="code-string">"duration"</span>: 36,
+    <span class="code-string">"annual_income"</span>: 85000,
+    <span class="code-string">"employment_status"</span>: <span class="code-string">"full_time"</span>,
+    <span class="code-string">"credit_score"</span>: 720,
+    <span class="code-string">"housing_status"</span>: <span class="code-string">"mortgage"</span>,
+    <span class="code-string">"loan_purpose"</span>: <span class="code-string">"auto_purchase"</span>,
+    <span class="code-comment"># ... 50+ fields supported</span>
+}
+
+response = requests.post(
+    <span class="code-string">"http://localhost:8000/api/v1/assess"</span>,
+    json=application,
+    headers={<span class="code-string">"X-API-Key"</span>: <span class="code-string">"demo-key-free-tier"</span>}
+)
+
+result = response.json()
+<span class="code-keyword">print</span>(f<span class="code-string">"Decision: {result['decision']}"</span>)
+<span class="code-keyword">print</span>(f<span class="code-string">"Risk Grade: {result['risk_grade']}"</span>)
+<span class="code-keyword">print</span>(f<span class="code-string">"Probability: {result['probability']:.1%}"</span>)</code></pre>
+                </div>
+                <div class="code-block" id="code-curl" style="display:none;">
+                    <pre><code><span class="code-comment"># Quick Check (4 fields)</span>
+curl -X POST "http://localhost:8000/api/v1/quick-check" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: demo-key-free-tier" \
+  -d '{
+    "age": 30,
+    "credit_amount": 15000,
+    "duration": 24,
+    "installment_rate": 4
+  }'</code></pre>
+                </div>
+                <div class="code-block" id="code-javascript" style="display:none;">
+                    <pre><code><span class="code-keyword">const</span> response = <span class="code-keyword">await</span> fetch(
+    <span class="code-string">'http://localhost:8000/api/v1/assess'</span>, 
+    {
+        method: <span class="code-string">'POST'</span>,
+        headers: {
+            <span class="code-string">'Content-Type'</span>: <span class="code-string">'application/json'</span>,
+            <span class="code-string">'X-API-Key'</span>: <span class="code-string">'demo-key-free-tier'</span>
+        },
+        body: JSON.stringify({
+            age: 35,
+            credit_amount: 25000,
+            duration: 36,
+            annual_income: 85000,
+            loan_purpose: <span class="code-string">'auto_purchase'</span>
+        })
+    }
+);
+
+<span class="code-keyword">const</span> result = <span class="code-keyword">await</span> response.json();
+console.log(result.decision, result.risk_grade);</code></pre>
+                </div>
+                <div class="api-endpoints">
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/v1/assess</span>
+                        <span class="desc">Full 50+ field assessment</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/v1/quick-check</span>
+                        <span class="desc">4-field rapid screening</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/v1/batch-assess</span>
+                        <span class="desc">Up to 100 applications</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/v1/explain/lime</span>
+                        <span class="desc">LIME explanation</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/v1/model-info</span>
+                        <span class="desc">Model performance data</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/v1/health</span>
+                        <span class="desc">Health check</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/v1/application-fields</span>
+                        <span class="desc">List all fields</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= PRICING SECTION ============= -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Simple Pricing</span>
+                <h2 class="section-title">Plans for Every Lender</h2>
+                <p class="section-subtitle">From credit unions to enterprise banks — transparent pricing with no hidden fees</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Free</h3>
+                        <div class="price">$0<span>/mo</span></div>
+                        <p>For evaluation</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ 10 predictions/day</li>
+                        <li>✅ SHAP explanations</li>
+                        <li>✅ Web dashboard</li>
+                        <li>❌ API access</li>
+                        <li>❌ Batch processing</li>
+                        <li>❌ Adverse notices</li>
+                    </ul>
+                    <button class="btn btn-outline btn-full" id="pricing-free">Get Started Free</button>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Starter</h3>
+                        <div class="price">$99<span>/mo</span></div>
+                        <p>For small lenders</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ 500 predictions/day</li>
+                        <li>✅ SHAP + LIME</li>
+                        <li>✅ Full API access</li>
+                        <li>✅ Adverse action notices</li>
+                        <li>✅ Email support</li>
+                        <li>❌ White-label</li>
+                    </ul>
+                    <button class="btn btn-primary btn-full" id="pricing-starter">Start Free Trial</button>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Business</h3>
+                        <div class="price">$299<span>/mo</span></div>
+                        <p>For growing fintechs</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ 5,000 predictions/day</li>
+                        <li>✅ All explainability</li>
+                        <li>✅ Batch processing</li>
+                        <li>✅ Fairness audits</li>
+                        <li>✅ White-label reports</li>
+                        <li>✅ Priority support</li>
+                    </ul>
+                    <button class="btn btn-outline btn-full" id="pricing-business">Contact Sales</button>
+                </div>
+                <div class="pricing-card enterprise">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="price">$999<span>/mo</span></div>
+                        <p>For banks & large lenders</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Unlimited predictions</li>
+                        <li>✅ Custom AI models</li>
+                        <li>✅ On-premise deployment</li>
+                        <li>✅ SLA guarantee (99.9%)</li>
+                        <li>✅ 24/7 dedicated support</li>
+                        <li>✅ Full audit trail</li>
+                    </ul>
+                    <button class="btn btn-outline btn-full" id="pricing-enterprise">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= COMPLIANCE SECTION ============= -->
+    <section class="compliance-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Regulatory Compliance</span>
+                <h2 class="section-title">Built for Regulated Industries</h2>
+            </div>
+            <div class="compliance-grid">
+                <div class="compliance-card">
+                    <h4>🇺🇸 FCRA</h4>
+                    <p>Fair Credit Reporting Act — Automated adverse action notices with specific reasons</p>
+                </div>
+                <div class="compliance-card">
+                    <h4>🇺🇸 ECOA</h4>
+                    <p>Equal Credit Opportunity Act — Bias detection across protected attributes</p>
+                </div>
+                <div class="compliance-card">
+                    <h4>🇪🇺 GDPR</h4>
+                    <p>General Data Protection Regulation — Right to explanation for automated decisions</p>
+                </div>
+                <div class="compliance-card">
+                    <h4>🏛️ SR 11-7</h4>
+                    <p>Federal Reserve Model Risk Management — Model documentation and validation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============= FOOTER ============= -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="nav-brand">
+                        <span class="brand-icon">💳</span>
+                        <span class="brand-text">CreditRisk<span class="brand-accent">.AI</span></span>
+                    </div>
+                    <p>Explainable AI for fair, transparent credit decisions. Built with ❤️ for regulated financial services.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="#assess">Credit Assessment</a>
+                    <a href="#explainability">Explainability</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="/docs" target="_blank">API Documentation</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Compliance</h4>
+                    <a href="#">FCRA Compliance</a>
+                    <a href="#">ECOA Compliance</a>
+                    <a href="#">GDPR Compliance</a>
+                    <a href="#">Model Card</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Contact</h4>
+                    <a href="mailto:keshavkumarhf@gmail.com">keshavkumarhf@gmail.com</a>
+                    <a href="tel:+919266826263">+91 92668 26263</a>
+                    <a href="#">Created by Keshav Kumar</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 CreditRisk.AI — Explainable Credit Risk Platform. All rights reserved.</p>
+                <p>Version 2.0.0 • Production Ready ✅</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

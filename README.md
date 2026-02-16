@@ -1,248 +1,220 @@
-# 💳 Explainable AI Credit Risk Platform
+# 💳 Explainable AI Credit Risk Platform (v2.0)
 
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Production-brightgreen)
+![API](https://img.shields.io/badge/API-FastAPI-009688)
 
-A production-ready, explainable AI platform for credit risk assessment with built-in fairness auditing and regulatory compliance features.
+**A production-ready SaaS platform for explainable AI credit risk assessment**, combining bank-grade lending decisions with full transparency through SHAP, LIME, and counterfactual analysis.
 
-## 🎯 Key Features
-
-### 🤖 **Advanced ML Models**
-- **6 State-of-the-art Models**: Logistic Regression, Random Forest, XGBoost, LightGBM, CatBoost, Gradient Boosting
-- **Ensemble Methods**: Automated model comparison and best model selection
-- **Imbalanced Data Handling**: SMOTE, SMOTEENN, and undersampling techniques
-- **Feature Engineering**: Automated feature creation, encoding, and scaling
-
-### 🔍 **Explainability (XAI)**
-- **SHAP (SHapley Additive exPlanations)**: Global and local feature importance
-- **LIME**: Model-agnostic explanations
-- **Adverse Action Notices**: Legally compliant rejection notices (US regulations)
-- **Actionable Recommendations**: What-if analysis for applicants
-
-### ⚖️ **Fairness & Compliance**
-- **Bias Detection**: Fairlearn integration for demographic parity and equalized odds
-- **Protected Attributes**: Age, gender, and custom sensitive features
-- **Regulatory Reports**: GDPR-compliant explanations, model documentation
-- **Audit Trails**: Complete decision transparency
-
-### 🚀 **Deployment Ready**
-- **Streamlit Web App**: Interactive UI for single and batch predictions
-- **FastAPI Backend**: RESTful API for production integration
-- **Database Support**: PostgreSQL and MongoDB connectors
-- **Scalable Architecture**: Modular design for easy extension
-
-## 📊 **Model Performance**
-
-| Model | Accuracy | ROC-AUC | F1-Score |
-|-------|----------|---------|----------|
-| CatBoost | 76% | 0.791 | 0.556 |
-| Gradient Boosting | 73% | 0.776 | 0.542 |
-| Random Forest | 73% | 0.752 | 0.557 |
-| LightGBM | 71% | 0.750 | 0.517 |
-| XGBoost | 72% | 0.734 | 0.491 |
-| Logistic Regression | 73% | 0.717 | 0.542 |
-
-## 🛠️ Installation
-
-### Prerequisites
-- Python 3.9 or higher
-- Anaconda (recommended) or virtualenv
-
-### Quick Start
+## 🚀 Quick Start
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/credit-risk-platform.git
-cd credit-risk-platform
-
-# Create virtual environment
-conda create -n credit-risk python=3.9
-conda activate credit-risk
-
 # Install dependencies
 pip install -r requirements.txt
 
-# Run feature engineering
-python src/feature_engineering.py
+# Start the platform (API + Website)
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 
-# Train models
-python src/model_training.py
-
-# Generate explainability artifacts
-python src/explainability.py
-
-# Run fairness audit
-python src/fairness_audit.py
-
-# Launch Streamlit app
-cd frontend
-streamlit run app.py
+# Visit: http://localhost:8000
+# API Docs: http://localhost:8000/docs
 ```
-
-## 📁 Project Structure
-
-```
-credit-risk-platform/
-├── data/
-│   ├── raw/                    # Original datasets
-│   ├── processed/              # Processed data after feature engineering
-│   └── download_datasets.py    # Data download scripts
-├── src/
-│   ├── feature_engineering.py  # Feature creation & preprocessing
-│   ├── model_training.py       # Train all ML models
-│   ├── explainability.py       # SHAP, LIME, adverse notices
-│   └── fairness_audit.py       # Bias detection & fairness
-├── models/
-│   ├── trained/                # Saved model files (.pkl)
-│   ├── explainers/             # SHAP explainers
-│   └── feature_engineer.pkl    # Preprocessing pipeline
-├── frontend/
-│   └── app.py                  # Streamlit web application
-├── api/
-│   └── main.py                 # FastAPI backend
-├── notebooks/
-│   └── 01_data_exploration.ipynb
-├── reports/
-│   ├── figures/                # Visualizations (ROC, SHAP plots)
-│   ├── outputs/                # PDFs, notices, recommendations
-│   └── model_comparison.csv    # Performance comparison
-├── tests/
-│   └── test_*.py               # Unit tests
-├── docs/
-│   └── API_DOCUMENTATION.md    # API reference
-├── requirements.txt
-└── README.md
-```
-
-## 🎨 Streamlit Web App
-
-Launch the interactive web application:
-
-```bash
-cd frontend
-streamlit run app.py
-```
-
-**Features:**
-- 🏠 **Home**: Model performance dashboard
-- 📊 **Single Prediction**: Real-time credit decision with explanations
-- 📈 **Batch Analysis**: Upload CSV for bulk processing
-- ⚖️ **Fairness Audit**: Bias detection reports
-
-## 🔌 API Usage
-
-Start the FastAPI server:
-
-```bash
-cd api
-uvicorn main:app --reload
-```
-
-**Example Request:**
-
-```python
-import requests
-
-data = {
-    "age": 30,
-    "credit_amount": 5000,
-    "duration": 24,
-    "installment_rate": 4
-}
-
-response = requests.post("http://localhost:8000/predict", json=data)
-print(response.json())
-```
-
-**Response:**
-
-```json
-{
-    "decision": "APPROVED",
-    "probability": 0.23,
-    "top_factors": [
-        {"feature": "credit_amount", "impact": 0.15},
-        {"feature": "duration", "impact": -0.08}
-    ],
-    "recommendations": ["Maintain current payment history"]
-}
-```
-
-## 📚 Data Sources
-
-This platform uses publicly available datasets:
-
-1. **German Credit Data** (UCI Repository) - 1,000 records
-2. **Lending Club Loan Data** - 2M+ records
-3. **Give Me Some Credit** (Kaggle) - 150k+ records
-4. **Home Credit Default Risk** (Kaggle) - 300k+ records
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# With coverage
-pytest tests/ --cov=src --cov-report=html
-```
-
-## 💰 Monetization Strategy
-
-### SaaS Pricing Tiers
-
-| Tier | Price | Predictions/Month | Features |
-|------|-------|-------------------|----------|
-| **Free** | $0 | 10 | Basic predictions |
-| **Starter** | $99 | 500 | API access + explanations |
-| **Business** | $299 | 5,000 | White-label + batch |
-| **Enterprise** | $999 | Unlimited | Custom models + SLA |
-
-### Target Customers
-- Credit unions
-- Microfinance institutions
-- FinTech lenders (Affirm, Klarna competitors)
-- Small banks
-- Buy-now-pay-later startups
-
-### Revenue Projections
-- **Year 1**: $23k (10 small + 3 mid-size clients)
-- **Year 2**: $80k-120k (50 customers + enterprise)
-- **Year 3**: $200k-500k (100+ customers + white-label)
-
-## 🔒 Regulatory Compliance
-
-- ✅ **FCRA** (Fair Credit Reporting Act) - Adverse action notices
-- ✅ **ECOA** (Equal Credit Opportunity Act) - Bias detection
-- ✅ **GDPR** (EU) - Right to explanation
-- ✅ **SR 11-7** (Federal Reserve) - Model risk management
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 📧 Contact
-
-For enterprise inquiries: contact@creditrisk.ai
-
-## 🙏 Acknowledgments
-
-- **SHAP** by Scott Lundberg
-- **Fairlearn** by Microsoft Research
-- **UCI Machine Learning Repository**
-- **Kaggle** for public datasets
 
 ---
 
-**Built with ❤️ for transparent and fair AI in finance**
+## 🎯 Key Features
+
+### 🤖 6 Machine Learning Models
+- **CatBoost** (Best Performer), XGBoost, LightGBM, Random Forest, Gradient Boosting, Logistic Regression
+- Automatic best-model selection with cross-validation
+
+### 🔍 Triple Explainability
+| Method | Type | Description |
+|--------|------|-------------|
+| **SHAP** | TreeExplainer | Game-theory based guaranteed fair attribution |
+| **LIME** | Model-Agnostic | Local interpretable model-agnostic validation |
+| **Counterfactual** | Perturbation | "What-if" scenarios showing path to approval |
+
+### 📋 Comprehensive Application (50+ Fields)
+Covers the **5 Cs of Credit** used by all major banks:
+- **Character**: Credit history, payment behavior, inquiries
+- **Capacity**: Income, debt-to-income ratio, employment
+- **Capital**: Savings, investments, total assets
+- **Collateral**: Property value, vehicle value
+- **Conditions**: Loan purpose, amount, duration
+
+### ⚖️ Fairness & Compliance
+- **FCRA**: Auto-generated adverse action notices with specific reasons
+- **ECOA**: Bias detection via Fairlearn across protected attributes
+- **GDPR**: Right to explanation for automated decisions
+- **SR 11-7**: Model documentation and validation framework
+
+---
+
+## 🏗️ Architecture
+
+```
+credit-risk-platform/
+├── api/
+│   └── main.py              # FastAPI SaaS API (v2.0)
+├── website/                  # SaaS Website Frontend
+│   ├── index.html           # Main page
+│   ├── styles.css           # Premium dark theme CSS
+│   └── app.js               # Interactive frontend JS
+├── src/
+│   ├── feature_engineering.py
+│   ├── model_training.py
+│   ├── explainability.py    # SHAP + LIME + Counterfactual
+│   └── fairness_audit.py
+├── models/
+│   ├── trained/             # 6 ML model pickles
+│   └── explainers/          # SHAP/LIME explainer objects
+├── frontend/
+│   └── app.py               # Streamlit dashboard (legacy)
+├── data/
+│   ├── raw/                 # German Credit + multi-source
+│   └── processed/           # Train/test splits
+└── docs/
+    ├── API_DOCUMENTATION.md
+    ├── MODEL_CARD.md
+    └── DEPLOYMENT.md
+```
+
+---
+
+## 📡 REST API
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/assess` | Full 50+ field credit assessment |
+| `POST` | `/api/v1/quick-check` | Rapid 4-field screening |
+| `POST` | `/api/v1/batch-assess` | Up to 100 applications |
+| `POST` | `/api/v1/explain/lime` | LIME model-agnostic explanation |
+| `GET` | `/api/v1/health` | Health check & uptime |
+| `GET` | `/api/v1/model-info` | Model performance data |
+| `GET` | `/api/v1/pricing` | Pricing tiers |
+| `GET` | `/api/v1/application-fields` | All available fields |
+
+### Quick Start Examples
+
+**Python:**
+```python
+import requests
+
+# Full Assessment
+response = requests.post(
+    "http://localhost:8000/api/v1/assess",
+    json={
+        "age": 35,
+        "credit_amount": 25000,
+        "duration": 36,
+        "annual_income": 85000,
+        "employment_status": "full_time",
+        "credit_score": 720,
+        "housing_status": "mortgage",
+        "loan_purpose": "auto_purchase"
+    },
+    headers={"X-API-Key": "demo-key-free-tier"}
+)
+
+result = response.json()
+print(f"Decision: {result['decision']}")
+print(f"Risk Grade: {result['risk_grade']}")
+print(f"Default Probability: {result['probability']:.1%}")
+```
+
+**cURL:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/quick-check" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: demo-key-free-tier" \
+  -d '{"age": 30, "credit_amount": 15000, "duration": 24, "installment_rate": 4}'
+```
+
+### API Response Format
+```json
+{
+  "request_id": "uuid",
+  "decision": "APPROVED",
+  "probability": 0.1823,
+  "risk_level": "LOW",
+  "risk_grade": "A",
+  "credit_score_equivalent": 740,
+  "top_factors": [...],
+  "explainability": {
+    "method": "SHAP (TreeExplainer)",
+    "top_factors": [...],
+    "explanation_text": "Human-readable explanation..."
+  },
+  "debt_to_income_ratio": 0.15,
+  "loan_to_value_ratio": 0.07,
+  "processing_time_ms": 245.3
+}
+```
+
+### Authentication
+Pass your API key in the `X-API-Key` header.
+
+| Tier | Limit | API Key |
+|------|-------|---------|
+| Free | 10/day | `demo-key-free-tier` |
+| Starter | 500/day | Contact us |
+| Business | 5,000/day | Contact us |
+| Enterprise | Unlimited | Contact us |
+
+---
+
+## 🌐 SaaS Website
+
+The platform includes a stunning dark-mode SaaS website at `http://localhost:8000/` with:
+
+- **Hero** with animated gradient orbs and glassmorphism
+- **Credit Assessment** form with Quick Check (4 fields) and Full Assessment (50+ fields)
+- **Real-time Results** with risk gauge, SHAP factor bars, and decision explanations
+- **API Documentation** with copy-able code samples in Python, cURL, and JavaScript
+- **Pricing Page** with 4 tiers
+- **Compliance Section** covering FCRA, ECOA, GDPR, SR 11-7
+- **Fully Responsive** design for mobile, tablet, and desktop
+
+---
+
+## 🛠️ Development
+
+```bash
+# Run Streamlit dashboard (legacy)
+streamlit run frontend/app.py
+
+# Run API server with hot-reload
+uvicorn api.main:app --reload --port 8000
+
+# Run tests
+pytest tests/ -v
+
+# Docker
+docker-compose up -d
+```
+
+---
+
+## 📊 Model Performance
+
+| Model | AUC-ROC | Accuracy | F1 Score |
+|-------|---------|----------|----------|
+| CatBoost | 0.79 | 76% | 0.74 |
+| XGBoost | 0.78 | 75% | 0.73 |
+| LightGBM | 0.77 | 75% | 0.72 |
+| Random Forest | 0.76 | 74% | 0.71 |
+
+---
+
+## 📄 License
+
+MIT License — See [LICENSE](LICENSE) for details.
+
+## 👤 Author
+
+**Keshav Kumar**
+- Email: keshavkumarhf@gmail.com
+- Phone: +91 92668 26263
