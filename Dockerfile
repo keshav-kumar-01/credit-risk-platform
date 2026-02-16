@@ -20,14 +20,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p models/trained models/explainers data/raw data/processed reports/outputs reports/figures
+RUN mkdir -p models/trained models/explainers data/raw data/processed reports/outputs reports/figures docs
 
-# Expose ports
-EXPOSE 8000 8501
+# Railway uses $PORT env var — default to 8000 if not set
+ENV PORT=8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+# Expose port (Railway overrides this with $PORT)
+EXPOSE $PORT
 
-# Default command (can be overridden)
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Health check uses the actual port
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/api/v1/health || exit 1
+
+# Start with dynamic port — Railway injects $PORT
+CMD uvicorn api.main:app --host 0.0.0.0 --port $PORT

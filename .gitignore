@@ -49,11 +49,22 @@ venv.bak/
 *.h5
 *.hdf5
 
-# Model files (too large for git)
-models/trained/*.pkl
-models/explainers/*.pkl
-*.pkl
+# Large model files (NOT needed for deployment)
+models/trained/omni_*.pkl
+models/trained/random_forest.pkl
+models/trained/xgboost.pkl
+models/trained/gradient_boosting.pkl
+models/trained/*_gmsc*.pkl
+models/trained/*_lending*.pkl
+models/*_gmsc*.pkl
+models/*_lending*.pkl
+models/omni_*.pkl
 *.joblib
+
+# KEEP these essential model files (required for deployment):
+# models/trained/best_model_catboost.pkl  (~228 KB)
+# models/feature_engineer.pkl            (~2.6 KB)
+# models/explainers/credit_explainer.pkl (~2.3 MB)
 
 # Reports/Outputs
 reports/figures/*.png
@@ -76,3 +87,8 @@ logs/
 
 # OS
 Thumbs.db
+
+# Large zip datasets
+credit-risk-dataset.zip
+give-me-some-credit-dataset.zip
+home-credit-default-risk.zip

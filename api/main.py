@@ -56,6 +56,27 @@ __main__.CreditFeatureEngineering = CreditFeatureEngineering
 __main__.CreditExplainer = CreditExplainer
 
 # =====================================================
+# ENVIRONMENT CONFIGURATION
+# =====================================================
+
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1", "yes")
+SECRET_KEY = os.environ.get("SECRET_KEY", "change-this-in-production")
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
+MODEL_VERSION = os.environ.get("MODEL_VERSION", "2.0.0")
+MODEL_PATH = os.environ.get("MODEL_PATH", "models/trained/best_model_catboost.pkl")
+RATE_LIMIT_DEFAULT = int(os.environ.get("RATE_LIMIT", "1000"))
+CORS_ORIGINS_STR = os.environ.get("CORS_ORIGINS", "*")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*")
+PORT = int(os.environ.get("PORT", "8000"))
+
+# Parse CORS origins
+if CORS_ORIGINS_STR == "*":
+    CORS_ORIGINS = ["*"]
+else:
+    CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_STR.split(",") if origin.strip()]
+
+# =====================================================
 # GLOBALS
 # =====================================================
 
@@ -66,13 +87,17 @@ explainer = None
 # Simple in-memory rate limiting (use Redis in production)
 rate_limit_store = defaultdict(list)
 
-# API Keys (use database in production)
+# API Keys — load custom key from env or use defaults
+_custom_api_key = os.environ.get("API_KEY", "")
 API_KEYS = {
     "demo-key-free-tier": {"tier": "free", "limit": 10, "name": "Demo User"},
     "starter-key-500": {"tier": "starter", "limit": 500, "name": "Starter User"},
     "business-key-5000": {"tier": "business", "limit": 5000, "name": "Business User"},
     "enterprise-key-unlimited": {"tier": "enterprise", "limit": 999999, "name": "Enterprise User"},
 }
+# If a custom API key is set via env, add it as an enterprise key
+if _custom_api_key and _custom_api_key != "your-api-key-here":
+    API_KEYS[_custom_api_key] = {"tier": "enterprise", "limit": 999999, "name": "Custom API Key"}
 
 # =====================================================
 # ENUMS FOR COMPREHENSIVE FIELDS
@@ -288,6 +313,8 @@ class FeatureImportance(BaseModel):
     human_readable: Optional[str] = None
 
 class ExplainabilityReport(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    
     method: str
     top_factors: List[FeatureImportance]
     base_value: Optional[float] = None
@@ -312,6 +339,8 @@ class PredictionResponse(BaseModel):
     processing_time_ms: float
 
 class HealthResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    
     status: str
     model_loaded: bool
     version: str
@@ -664,12 +693,17 @@ async def lifespan(app: FastAPI):
     global model, feature_engineer, explainer
     
     try:
-        model = joblib.load(str(TRAINED_MODELS_DIR / "best_model_catboost.pkl"))
+        # Use MODEL_PATH env var or default paths
+        model_path = BASE_DIR / MODEL_PATH
+        model = joblib.load(str(model_path))
         feature_engineer = joblib.load(str(MODELS_DIR / "feature_engineer.pkl"))
         explainer = joblib.load(str(EXPLAINERS_DIR / "credit_explainer.pkl"))
-        print("✅ All models loaded successfully")
+        print(f"✅ All models loaded successfully (env: {ENVIRONMENT})")
     except Exception as e:
         print(f"⚠️ Error loading models: {e}")
+        print(f"   Model path attempted: {BASE_DIR / MODEL_PATH}")
+        print(f"   Models dir: {MODELS_DIR}")
+        print(f"   Explainers dir: {EXPLAINERS_DIR}")
     
     yield
 
@@ -711,10 +745,10 @@ Pass your API key in the `X-API-Key` header.
     }
 )
 
-# CORS
+# CORS — uses CORS_ORIGINS env variable
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -748,7 +782,7 @@ async def health_check():
     return {
         "status": "healthy",
         "model_loaded": model is not None,
-        "version": "2.0.0",
+        "version": MODEL_VERSION,
         "uptime_seconds": round(time.time() - start_time, 2),
         "total_predictions": prediction_count
     }
@@ -1014,4 +1048,4 @@ async def application_fields():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=PORT, reload=DEBUG)
