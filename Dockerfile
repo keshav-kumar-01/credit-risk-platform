@@ -22,15 +22,14 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p models/trained models/explainers data/raw data/processed reports/outputs reports/figures docs
 
-# Railway uses $PORT env var — default to 8000 if not set
+# Default port (Railway overrides via PORT env var)
 ENV PORT=8000
 
-# Expose port (Railway overrides this with $PORT)
-EXPOSE $PORT
+EXPOSE 8000
 
-# Health check uses the actual port
+# Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:${PORT}/api/v1/health || exit 1
 
-# Start with dynamic port — Railway injects $PORT
-CMD uvicorn api.main:app --host 0.0.0.0 --port $PORT
+# Use Python to read PORT from env — avoids shell expansion issues
+CMD ["python", "-c", "import uvicorn, os; uvicorn.run('api.main:app', host='0.0.0.0', port=int(os.environ.get('PORT', '8000')))"]
