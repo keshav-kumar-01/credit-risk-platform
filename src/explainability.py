@@ -129,7 +129,7 @@ class CreditExplainer:
         try:
             expected_val = self.shap_explainer.expected_value
             if isinstance(expected_val, np.ndarray) or isinstance(expected_val, list):
-                expected_val = expected_val[1] # Class 1 base value
+                expected_val = expected_val[1] if len(expected_val) > 1 else expected_val[0]
 
             shap.force_plot(
                 expected_val,

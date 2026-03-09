@@ -1,0 +1,14 @@
+[16208] Using automatically selected callback port: 15565
+[16208] Using custom headers: {"X-Goog-Api-Key":""}
+[16208] Discovering OAuth server configuration...
+[16208] Discovered authorization server: https://accounts.google.com/
+[16208] [16208] Connecting to remote server: https://stitch.googleapis.com/mcp
+[16208] Using transport strategy: http-first
+[16208] Connected to remote server using StreamableHTTPClientTransport
+[16208] Local STDIO server running
+[16208] Proxy established successfully between local STDIO and remote StreamableHTTPClientTransport
+[16208] Press Ctrl+C to exit
+[16208] [Local→Remote] tools/list
+[16208] [Remote→Local] 1
+[16208] 
+Shutting down...

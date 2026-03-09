@@ -251,19 +251,33 @@ elif page == "📊 Single Prediction":
     
     st.markdown("---")
     
+    currency = st.radio("Preferred Currency", ["₹ (INR)", "$ (USD)"], horizontal=True, help="Select the currency. The AI system handles normalization internally.")
+    
     with st.form("predict_form"):
         col1, col2 = st.columns(2)
         
         with col1:
             age = st.number_input("Age", min_value=18, max_value=100, value=30, help="Applicant's age in years")
-            credit_amount = st.number_input("Credit Amount ($)", min_value=100, max_value=100000, value=5000, step=100, help="Requested loan amount")
             
-            checking_options = {
-                "No checking account": "A14", 
-                "< 0 DM": "A11", 
-                "0 <= < 200 DM": "A12", 
-                ">= 200 DM": "A13"
-            }
+            if currency == "₹ (INR)":
+                credit_amount_input = st.number_input("Credit Amount (₹)", min_value=1000, max_value=10000000, value=400000, step=1000, help="Requested loan amount in Rupees")
+                credit_amount = credit_amount_input / 80.0
+                checking_options = {
+                    "No checking account": "A14", 
+                    "< ₹ 0": "A11", 
+                    "₹ 0 to ₹ 16,000": "A12", 
+                    ">= ₹ 16,000": "A13"
+                }
+            else:
+                credit_amount_input = st.number_input("Credit Amount ($)", min_value=100, max_value=100000, value=5000, step=100, help="Requested loan amount")
+                credit_amount = credit_amount_input
+                checking_options = {
+                    "No checking account": "A14", 
+                    "< $ 0": "A11", 
+                    "$ 0 to $ 200": "A12", 
+                    ">= $ 200": "A13"
+                }
+            
             checking_status_label = st.selectbox("Checking Account Status", list(checking_options.keys()), index=0)
             checking_status = checking_options[checking_status_label]
             
@@ -454,7 +468,7 @@ elif page == "📈 Batch Analysis":
         st.markdown("""
         Your CSV file must contain the following columns:
         - `age`: Applicant age (18-100)
-        - `credit_amount`: Loan amount (100-100000)
+        - `credit_amount`: Loan amount (100-100000 for USD, 1000-10000000 for INR)
         - `duration`: Loan duration in months (1-120)
         - `installment_rate`: Installment rate percentage (1-10)
         
@@ -484,12 +498,17 @@ elif page == "📈 Batch Analysis":
     
     st.markdown("---")
     
+    currency_batch = st.radio("Data Currency", ["₹ (INR)", "$ (USD)"], horizontal=True, help="Select the currency used in your CSV file.")
     file = st.file_uploader("Upload CSV File", type="csv", help="Upload a CSV file with applicant data")
     
     if file:
         try:
             with st.spinner("📊 Processing applications..."):
                 df = pd.read_csv(file)
+                
+                if currency_batch == "₹ (INR)" and "credit_amount" in df.columns:
+                    df['credit_amount'] = df['credit_amount'] / 80.0
+                    st.info("ℹ️ Automatically scaled INR values to standard evaluation metric.")
                 
                 # Required core columns for feature engineering
                 core_cols = ['age', 'credit_amount', 'duration']
